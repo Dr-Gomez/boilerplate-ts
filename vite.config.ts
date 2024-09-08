@@ -7,8 +7,6 @@ import fs from "fs";
 import path from "path";
 import mime from "mime-types";
 
-const execDir = process.cwd();
-
 function viteBase64ImagePlugin(): Plugin {
   return {
     name: "vite-base64-image-plugin",
@@ -51,14 +49,23 @@ function viteBase64ImagePlugin(): Plugin {
           .replace(/'/g, "%27")
           .replace(/"/g, "%22");
         return `export default "data:image/svg+xml;charset=utf-8,${encodedSvgContent}"`;
-      } else {
-        if ([".png", ".jpg", ".jpeg", ".gif"].includes(extension)) {
-          const fileBuffer = fs.readFileSync(id);
-          const base64String = `data:${mimeType};base64,${fileBuffer.toString(
-            "base64"
-          )}`;
-          return `export default "${base64String}"`;
-        }
+      } else if (
+        [
+          ".png",
+          ".jpg",
+          ".jpeg",
+          ".gif",
+          ".woff",
+          ".woff2",
+          ".ttf",
+          ".otf",
+        ].includes(extension)
+      ) {
+        const fileBuffer = fs.readFileSync(id);
+        const base64String = `data:${mimeType};base64,${fileBuffer.toString(
+          "base64"
+        )}`;
+        return `export default "${base64String}"`;
       }
     },
   };
